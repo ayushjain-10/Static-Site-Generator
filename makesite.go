@@ -7,8 +7,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"fmt"
 	"github.com/bregydoc/gtranslate"
+	"time"
+	"github.com/fatih/color"
+	"fmt"
 )
 
 type Post struct {
@@ -28,6 +30,40 @@ func main() {
 	} else {
 		println("Please provide either a --file or a --dir flag.")
 	}
+
+	start := time.Now()
+
+	files, err := ioutil.ReadDir(".")
+	if err != nil {
+		panic(err)
+	}
+
+	count := 0
+	totalSize := int64(0) // in bytes
+
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), ".txt") {
+			processFile(file.Name())
+			count++
+
+			// Get size of the generated HTML file
+			htmlFile, err := os.Stat(strings.TrimSuffix(file.Name(), ".txt") + ".html")
+			if err != nil {
+				panic(err)
+			}
+
+			totalSize += htmlFile.Size()
+		}
+	}
+
+	elapsed := time.Since(start)
+	kbSize := float64(totalSize) / 1024.0
+
+	// Print success message
+	green := color.New(color.FgGreen, color.Bold).SprintFunc()
+	bold := color.New(color.Bold).SprintFunc()
+	fmt.Printf("%s Generated %s pages (%.1fkB total) in %.2f seconds.\n",
+		green("Success!"), bold(count), kbSize, elapsed.Seconds())
 }
 
 func processFile(filename string) {
@@ -68,6 +104,7 @@ func processFile(filename string) {
 	if err := tmpl.Execute(newFile, post); err != nil {
 		panic(err)
 	}
+	
 }
 
 
