@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"fmt"
+	"github.com/bregydoc/gtranslate"
 )
 
 type Post struct {
@@ -14,12 +16,11 @@ type Post struct {
 }
 
 func main() {
-	// Add new flag for file and directory
 	file := flag.String("file", "", "The name of the .txt file")
 	dir := flag.String("dir", "", "The directory to find .txt files")
 	flag.Parse()
 
-	// Determine whether to process a single file or all files in a directory
+
 	if *file != "" {
 		processFile(*file)
 	} else if *dir != "" {
@@ -29,15 +30,27 @@ func main() {
 	}
 }
 
-func processFile(file string) {
-	postContentBytes, err := ioutil.ReadFile(file)
+func processFile(filename string) {
+	postContentBytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
 
 	postContent := string(postContentBytes)
+
+	translatedContent, err := gtranslate.TranslateWithParams(
+		postContent,
+		gtranslate.TranslationParams{
+			From: "en",
+			To:   "es",
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	post := &Post{
-		Content: postContent,
+		Content: translatedContent,
 	}
 
 	tmpl, err := template.ParseFiles("template.tmpl")
@@ -45,8 +58,8 @@ func processFile(file string) {
 		panic(err)
 	}
 
-	newfile := strings.TrimSuffix(file, ".txt") + ".html"
-	newFile, err := os.Create(newfile)
+	newFilename := strings.TrimSuffix(filename, ".txt") + ".html"
+	newFile, err := os.Create(newFilename)
 	if err != nil {
 		panic(err)
 	}
@@ -56,6 +69,7 @@ func processFile(file string) {
 		panic(err)
 	}
 }
+
 
 func processDirectory(dir string) {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
