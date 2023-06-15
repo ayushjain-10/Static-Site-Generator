@@ -14,14 +14,14 @@ type Post struct {
 }
 
 func main() {
-	// Add new flag for filename and directory
-	filename := flag.String("file", "", "The name of the .txt file")
+	// Add new flag for file and directory
+	file := flag.String("file", "", "The name of the .txt file")
 	dir := flag.String("dir", "", "The directory to find .txt files")
 	flag.Parse()
 
 	// Determine whether to process a single file or all files in a directory
-	if *filename != "" {
-		processFile(*filename)
+	if *file != "" {
+		processFile(*file)
 	} else if *dir != "" {
 		processDirectory(*dir)
 	} else {
@@ -29,8 +29,8 @@ func main() {
 	}
 }
 
-func processFile(filename string) {
-	postContentBytes, err := ioutil.ReadFile(filename)
+func processFile(file string) {
+	postContentBytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}
@@ -45,8 +45,8 @@ func processFile(filename string) {
 		panic(err)
 	}
 
-	newFilename := strings.TrimSuffix(filename, ".txt") + ".html"
-	newFile, err := os.Create(newFilename)
+	newfile := strings.TrimSuffix(file, ".txt") + ".html"
+	newFile, err := os.Create(newfile)
 	if err != nil {
 		panic(err)
 	}

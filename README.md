@@ -34,6 +34,25 @@ $ git remote rm origin
 $ git remote add origin git@github.com:YOUR_GITHUB_USERNAME/makesite.git
 ```
 
+To run your program, use the following command:
+
+```bash
+$ go install
+$ go build makesite.go
+```
+
+For a specific .txt file:
+```bash
+$ ./makesite --file=first-post.txt
+```
+
+For all .txt files:
+```bash
+$ ./makesite --dir=.
+```
+
+
+
 ## Deliverables
 
 **For each task**:
